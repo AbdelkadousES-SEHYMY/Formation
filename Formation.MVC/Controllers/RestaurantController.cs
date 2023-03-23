@@ -2,19 +2,23 @@
 using Microsoft.AspNetCore.Mvc;
 using Formation.MVC.Repository;
 using Formation.Services;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Formation.MVC.Services;
 
 namespace Formation.MVC.Controllers
 {
     public class RestaurantController : Controller
     {
         private readonly IRestaurantService _restaurantService;
-         List<Restaurant> restaurants;
+        private readonly ICuisineService _cuisineService;
+        List<Restaurant> restaurants;
 
 
-        public RestaurantController(IRestaurantService restaurantService)
+        public RestaurantController(IRestaurantService restaurantService,ICuisineService cuisineService)
         {
             _restaurantService = restaurantService;
-            restaurants= _restaurantService.GetAll();
+            _cuisineService = cuisineService;
+            restaurants = _restaurantService.GetAll();
         }
         public IActionResult Index()
         {
@@ -33,18 +37,30 @@ namespace Formation.MVC.Controllers
             return View(model);
         }
         [HttpGet]
-        public IActionResult Create() { 
-        return View();
-                }
+        public IActionResult Create() {
+            var cuisins = _cuisineService.GetAllCuisin();
+
+            var model = new RestaurantViewModel(cuisins, new Restaurant());
+            return View(model);
+        }
         [HttpPost]
-        public IActionResult Create(Restaurant restaurant)
+        public IActionResult Create(RestaurantViewModel restaurantVM)
         {
+
             if (ModelState.IsValid)
             {
-                _restaurantService.Add(restaurant);
+
+                _restaurantService.Add(restaurantVM.Restaurant);
                 return RedirectToAction("Index");
             }
             return View();
+            //var cuisin = _cuisineService.GetCuisin(Request.Form["Restaurant.Cuisines"].FirstOrDefault());
+            //restaurantVM.Cuisins = _cuisineService.GetAllCuisin();
+            //restaurantVM.Restaurant.Cuisins.Add(cuisin);
+            //_restaurantService.Add(restaurantVM.Restaurant);
+            //TempData["message"] = "Created Succesfully";
+            //return RedirectToAction("Details", new { id = restaurantVM.Restaurant.Id });
+
 
         }
 

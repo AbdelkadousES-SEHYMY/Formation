@@ -1,3 +1,4 @@
+using Formation.MVC.Services;
 using Formation.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IRestaurantService, RestaurantService>();
+builder.Services.AddSingleton<ICuisineService, CuisineService>();
 
 var app = builder.Build();
 
